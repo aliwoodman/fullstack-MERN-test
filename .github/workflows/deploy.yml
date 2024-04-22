@@ -1,5 +1,5 @@
 name: Deploy pipeline
-'on':
+"on":
   push:
     branches:
       - main
@@ -7,8 +7,8 @@ name: Deploy pipeline
     branches:
       - main
 jobs:
- # Add your Docker Hub credentials to your GitHub repository secrets
- # as DOCKER_USERNAME and DOCKER_PASSWORD
+  # Add your Docker Hub credentials to your GitHub repository secrets
+  # as DOCKER_USERNAME and DOCKER_PASSWORD
   test-server:
     name: testing-server
     runs-on: ubuntu-latest
@@ -16,8 +16,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: docker/login-action@v2
         with:
-          username: '${{ secrets.DOCKER_USERNAME }}'
-          password: '${{ secrets.DOCKER_PASSWORD }}'
+          username: "${{ secrets.DOCKER_USERNAME }}"
+          password: "${{ secrets.DOCKER_PASSWORD }}"
       - run: >-
           docker build -t dockeruser/fullstack-mern-server -f
           server/Dockerfile.dev ./server
@@ -29,8 +29,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: docker/login-action@v2
         with:
-          username: '${{ secrets.DOCKER_USERNAME }}'
-          password: '${{ secrets.DOCKER_PASSWORD }}'
+          username: "${{ secrets.DOCKER_USERNAME }}"
+          password: "${{ secrets.DOCKER_PASSWORD }}"
       - run: >-
           docker build -t dockeruser/fullstack-mern-client -f
           client/Dockerfile.dev ./client
@@ -43,10 +43,10 @@ jobs:
       - run: docker push dockeruser/mern-server
       # The following steps are for deploying to AWS Elastic Beanstalk
       # Change the values below to match your AWS account
-      # - application_name: <your application name>
-      # - environment_name: <your application environment name>
-      # - existing_bucket_name: <the Elastic Beanstalk S3 Bucket created for the region the app was created in>
-      # - region: <The region of the app and S3 Bucket>
+      - application_name: mern-beanstalk
+      - environment_name: Mern-beanstalk-env
+      - existing_bucket_name: elasticbeanstalk-eu-west-1-767398134333
+      - region: eu-west-1
   deploy-to-aws:
     name: deploy-aws
     runs-on: ubuntu-latest
@@ -56,11 +56,11 @@ jobs:
       - run: zip -r deploy.zip . -x '*.git*'
       - uses: einaregilsson/beanstalk-deploy@v18
         with:
-          aws_access_key: '${{ secrets.AWS_ACCESS_KEY }}'
-          aws_secret_key: '${{ secrets.AWS_SECRET_KEY }}'
+          aws_access_key: "${{ secrets.AWS_ACCESS_KEY }}"
+          aws_secret_key: "${{ secrets.AWS_SECRET_KEY }}"
           application_name: mern-beanstalk
           environment_name: Mern-beanstalk-env
           existing_bucket_name: elasticbeanstalk-eu-west-2-318746526342
           region: eu-west-2
-          version_label: '${{ github.sha }}'
+          version_label: "${{ github.sha }}"
           deployment_package: deploy.zip
